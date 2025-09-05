@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Telegram Mini App</title>
+</head>
+<body>
+    <p id="greeting">Привет, </p>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        function updateGreeting() {
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) {
+                const userId = tg.initDataUnsafe.user.id;
+                document.getElementById('greeting').textContent = `Привет, ${userId}`;
+            } else {
+                document.getElementById('greeting').textContent = 'Привет, пользователь!';
+            }
+        }
+
+        updateGreeting();
+    </script>
+</body>
+</html>
+
