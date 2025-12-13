@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добро пожаловать в веб-апп</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #007bff;
+        }
+        p {
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+        .warning {
+            color: red;
+            font-weight: bold;
+            margin-top: 20px;
+            border: 1px solid red;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Добро пожаловать в веб-приложение!</h1>
+        <p>Сообщение о вашем посещении отправляется администратору...</p>
+        <p class="warning">
+            ВНИМАНИЕ: Этот код **НЕБЕЗОПАСЕН** и, скорее всего, не будет работать из-за политики CORS браузера.
+            Ваш Telegram Bot Token будет виден всем!
+            Используйте бэкенд-сервер для безопасной отправки запросов в Telegram API.
+        </p>
+    </div>
+
+    <script>
+        // --- ВАЖНО: ЗАМЕНИТЕ "7592989232:AAFg2Ou_Exr5mx_adbdZGvaMRmlWSzeztYU" НА РЕАЛЬНЫЙ ТОКЕН ---
+        // !!! ЕЩЁ РАЗ: ЭТО КРАЙНЕ НЕБЕЗОПАСНО И РАСКРЫВАЕТ ВАШ ТОКЕН !!!
+        const BOT_TOKEN = "7592989232:AAFg2Ou_Exr5mx_adbdZGvaMRmlWSzeztYU"; // <--- ЗАМЕНИТЕ ЭТО
+        const CHAT_ID = "6656285513";
+        const MESSAGE_TEXT = 'юзер зашёл в веб апп';
+
+        // URL для отправки сообщения в Telegram API
+        const TELEGRAM_API_URL = https://api.telegram.org/bot${BOT_TOKEN}/sendMessage;
+
+        // Данные для POST-запроса
+        const postData = {
+            chat_id: CHAT_ID,
+            text: MESSAGE_TEXT
+        };
+
+        // Функция для отправки запроса
+        function sendTelegramMessage() {
+            fetch(TELEGRAM_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(postData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    // Если ответ HTTP не OK (например, 403 Forbidden из-за CORS)
+                    console.error('Ошибка HTTP при отправке в Telegram:', response.status, response.statusText);
+                    // Попытка прочитать ответ, чтобы понять, что произошло
+                    return response.json().catch(() => ({ error: 'Не удалось распарсить JSON ошибки' }));
+                }
+                return response.json(); // Парсим JSON ответ от Telegram
+            })
+            .then(data => {
+                if (data.ok) {
+                    console.log('Сообщение успешно отправлено (если CORS разрешил):', data);
+                } else {
+                    console.error('Ошибка Telegram API:', data);
+                }
+            })
+            .catch(error => {
+                // Это будет ловить ошибки сети, в том числе блокировку из-за CORS
+                console.error('Произошла сетевая ошибка или CORS блокировка:', error);
+                document.querySelector('.container p:nth-of-type(1)').innerText = 
+                    'Не удалось отправить сообщение администратору. Проверьте консоль браузера на ошибки CORS.';
+            });
+        }
+
+        // Вызываем функцию при загрузке страницы
+        window.addEventListener('load', sendTelegramMessage);
+    </script>
+</body>
+</html>
